@@ -49,6 +49,29 @@ public class CrudCliente extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        try ( PrintWriter out = response.getWriter()) {
+            BufferedReader reader = request.getReader();
+            String json = reader.lines().collect(Collectors.joining());
+            JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
+
+            String codigo = obj.get("codigo").getAsString();
+            String nombre = obj.get("nombre").getAsString();
+            String apPaterno = obj.get("appater").getAsString();
+            String apMaterno = obj.get("apmater").getAsString();
+            ClienteJpaController cjc = new ClienteJpaController();
+            Gson gson = new Gson();
+            JsonObject jsonObject = new JsonObject();
+            try {
+                Cliente cliente = new Cliente(codigo, apPaterno, apMaterno, nombre);
+                cjc.create(cliente);
+                jsonObject.addProperty("result", "created");
+            } catch (Exception e) {
+                jsonObject.addProperty("result", "error" + e);
+                e.printStackTrace();
+            }
+            out.print(gson.toJson(jsonObject));
+        }
     }
 
     @Override

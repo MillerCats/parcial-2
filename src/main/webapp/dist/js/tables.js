@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", async () => {
     let token = getCookie("token");
     const modalEditar = new bootstrap.Modal(document.getElementById("modalEditar"));
+    const modalCrear = new bootstrap.Modal(document.getElementById("modalCrear"));
+    const showModalCrear = document.getElementById("showModalCrear");
     const btnEditar = document.getElementById("btnEditar");
     if (token) {
         await fetchData();
@@ -63,6 +65,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         modalEditar.show();
     }
 
+    showModalCrear.addEventListener("click", () => {
+        modalCrear.show();
+        const btnCrear = document.getElementById("btnCrear");
+        btnCrear.addEventListener("click", async () => {
+            const codigo = document.getElementById("newCodigo").value;
+            const appater = document.getElementById("newAppater").value;
+            const apmater = document.getElementById("newApmater").value;
+            const nombre = document.getElementById("newNombre").value;
+            const data = {codigo: codigo, appater: appater, apmater: apmater, nombre: nombre};
+            const response = await fetch("/Examen2Prac/crud-clientes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify(data)
+            }).then(response => response.json());
+            if (response.result === "created") {
+                await fetchData();
+                modalCrear.hide();
+            } else {
+                alter("Error al actualizar");
+                console.log(response.result);
+            }
+        });
+    });
+
     btnEditar.addEventListener("click", async () => {
         const codigo = document.getElementById("upCodigo").value;
         const appater = document.getElementById("upAppaterno").value;
@@ -78,8 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             body: JSON.stringify(data)
         }).then(response => response.json());
         if (response.result === "updated") {
-            alert("Acutalizado correctamente");
-            fetchData();
+            await fetchData();
             modalEditar.hide();
         } else {
             alter("Error al actualizar");
