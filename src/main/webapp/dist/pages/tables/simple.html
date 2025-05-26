@@ -713,15 +713,20 @@
                 <div class="app-content">
                     <div class="container-fluid">
                         <div class="card mb-4">
-                            <div class="card-header"><h3 class="card-title">Listado de Clientes</h3></div>
+                            <div class="card-header">
+                                <h3 class="card-title">Listado de Clientes</h3>
+                                <button type="button" class="btn btn-success float-end">Crear cliente</button>
+                            </div>
                             <div class="card-body">
-                                <table class="table table-bordered">
+                                <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
                                             <th>Codigo</th>
+                                            <th>Nombre</th>
                                             <th>Apellido Paterno</th>
                                             <th>Apellido Materno</th>
-                                            <th>Nombre</th>
+                                            <th>Editar</th>
+                                            <th>Eliminar</th>
                                         </tr>
                                     </thead>
                                     <tbody id="dataTable">
@@ -755,6 +760,37 @@
                 <!--end::Copyright-->
             </footer>
             <!--end::Footer-->
+        </div>
+        <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar Cliente</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Codigo</label>
+                            <input type="text" id="upCodigo" class="form-control" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre</label>
+                            <input type="text" id="upNombre" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido Paterno</label>
+                            <input type="text" id="upAppaterno" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Apellido Materno</label>
+                            <input type="text" id="upApmaterno" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex flex-row justify-content-between">
+                        <button type="button" class="btn" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="btnEditar" class="btn btn-warning float-end">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--end::App Wrapper-->
         <!--begin::Script-->
