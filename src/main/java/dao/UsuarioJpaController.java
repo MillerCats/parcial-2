@@ -9,9 +9,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import util.HashPass;
 
 public class UsuarioJpaController implements Serializable {
 
@@ -136,24 +138,36 @@ public class UsuarioJpaController implements Serializable {
         }
     }
 
-    public Usuario validarUsuario(Usuario usuario) {
+    public Usuario findUsuarioByLogin(String logiUsua) {
         EntityManager em = getEntityManager();
         try {
-            Query query = em.createNamedQuery("Usuario.validar");
-            query.setParameter("logiUsua", usuario.getLogiUsua());
-            query.setParameter("passUsua", usuario.getPassUsua());
+            Query query = em.createNamedQuery("Usuario.findByLogiUsua");
+            query.setParameter("logiUsua", logiUsua);
             return (Usuario) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            System.err.println("Error al buscar usuario por login: " + e.getMessage());
             return null;
         } finally {
             em.close();
         }
     }
 
+    public Usuario validarCredenciales(String logiUsua, String passIngresadaPlana) {
+        Usuario usuarioAlmacenado = findUsuarioByLogin(logiUsua);
+        String hashBataBase = usuarioAlmacenado.getPassUsua();
+        if (HashPass.checkPassword(passIngresadaPlana, hashBataBase)) {
+            return usuarioAlmacenado;
+        } else {
+            System.out.println("DEBUG: Contraseña incorrecta para el usuario: " + logiUsua);
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
         UsuarioJpaController ujc = new UsuarioJpaController();
-        Usuario usuario = ujc.validarUsuario(new Usuario("kike", "1234"));
+        Usuario usuario = ujc.validarCredenciales("kike", "1234");
         if (usuario != null) {
             System.out.println("Existe");
         } else {

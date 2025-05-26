@@ -18,11 +18,6 @@ import util.JwtUtil;
 public class LoginUser extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
@@ -34,7 +29,7 @@ public class LoginUser extends HttpServlet {
             String log = json.get("log").getAsString();
             String pass = json.get("pass").getAsString();
             UsuarioJpaController ujc = new UsuarioJpaController();
-            Usuario usuario = ujc.validarUsuario(new Usuario(log, pass));
+            Usuario usuario = ujc.validarCredenciales(log, pass);
             if (usuario != null) {
                 String token = JwtUtil.generarToken(log);
                 jsonObject.addProperty("result", "ok");

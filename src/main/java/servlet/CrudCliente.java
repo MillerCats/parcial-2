@@ -108,6 +108,32 @@ public class CrudCliente extends HttpServlet {
     }
 
     @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try ( PrintWriter out = response.getWriter()) {
+            BufferedReader reader = request.getReader();
+            String json = reader.lines().collect(Collectors.joining());
+            JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
+
+            String codigo = obj.get("codigo").getAsString();
+            ClienteJpaController cjc = new ClienteJpaController();
+            Cliente cliente = cjc.findCliente(codigo);
+            Gson gson = new Gson();
+            JsonObject jsonObject = new JsonObject();
+            try {
+                if (cliente != null) {
+                    cjc.destroy(codigo);
+                    jsonObject.addProperty("result", "deleted");
+                }
+            } catch (Exception e) {
+                jsonObject.addProperty("result", "error" + e);
+                e.printStackTrace();
+            }
+            out.print(gson.toJson(jsonObject));
+        }
+    }
+
+    @Override
     public String getServletInfo() {
         return "Short description";
     }

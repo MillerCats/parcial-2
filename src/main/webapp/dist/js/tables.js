@@ -2,8 +2,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     let token = getCookie("token");
     const modalEditar = new bootstrap.Modal(document.getElementById("modalEditar"));
     const modalCrear = new bootstrap.Modal(document.getElementById("modalCrear"));
+    const modalEliminar = new bootstrap.Modal(document.getElementById("modalEliminar"));
     const showModalCrear = document.getElementById("showModalCrear");
     const btnEditar = document.getElementById("btnEditar");
+    const btnEliminar = document.getElementById("btnEliminar");
     if (token) {
         await fetchData();
     } else {
@@ -49,20 +51,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         </td>
     `;
         fila.querySelector(".editar-btn").addEventListener("click", () => {
-            abrirModalEditar(p);
+            document.getElementById("upCodigo").value = p.codiClie;
+            document.getElementById("upAppaterno").value = p.appaClie;
+            document.getElementById("upApmaterno").value = p.apmaClie;
+            document.getElementById("upNombre").value = p.nombClie;
+            modalEditar.show();
         });
         fila.querySelector(".eliminar-btn").addEventListener("click", () => {
-            abrirModalEditar(p);
+            document.getElementById("delCodigo").value = p.codiClie;
+            document.getElementById("delData").value = p.nombClie + " " + p.appaClie;
+            modalEliminar.show();
         });
         return fila;
-    }
-
-    function abrirModalEditar(p) {
-        document.getElementById("upCodigo").value = p.codiClie;
-        document.getElementById("upAppaterno").value = p.appaClie;
-        document.getElementById("upApmaterno").value = p.apmaClie;
-        document.getElementById("upNombre").value = p.nombClie;
-        modalEditar.show();
     }
 
     showModalCrear.addEventListener("click", () => {
@@ -111,6 +111,25 @@ document.addEventListener("DOMContentLoaded", async () => {
             modalEditar.hide();
         } else {
             alter("Error al actualizar");
+            console.log(response.result);
+        }
+    });
+
+    btnEliminar.addEventListener("click", async () => {
+        const codigo = document.getElementById("delCodigo").value;
+        const response = await fetch("/Examen2Prac/crud-clientes", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({codigo: codigo})
+        }).then(response => response.json());
+        if (response.result === "deleted") {
+            await fetchData();
+            modalEliminar.hide();
+        } else {
+            alter("Error al eliminar");
             console.log(response.result);
         }
     });
